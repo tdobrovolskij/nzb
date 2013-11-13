@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'nzb'
-  s.version     = '0.2.0'
+  s.version     = '0.2.1'
   s.date        = '2013-11-02'
   s.summary     = "nzb"
   s.description = "Library for nzb file generation"

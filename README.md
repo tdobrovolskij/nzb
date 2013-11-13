@@ -29,4 +29,5 @@ Methods:
 
 HISTORY
 =======
+* 0.2.1 - Added attr_reader for nzb_filename  
 * 0.2.0 - Initial public release

@@ -32,6 +32,8 @@
 require 'cgi'
 
 class Nzb
+  attr_reader :nzb_filename
+
   # we accept basename and prefix, combine them and add suffix ".nzb"
   def initialize(filename,prefix='')
     @nzb_filename = prefix + filename + ".nzb"
