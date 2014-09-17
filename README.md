@@ -14,6 +14,7 @@ Simply invoke gem install:
 How to use
 ==========
 Methods:
+* save_segment - needs to be run for every segment(partial file), replaces write_segment(saves info into a variable)
 * write_header - invoked only once to generate xml header
 * write_file_header - you need to invoke it once for every file with following parameters:
   - poster - as in from field
@@ -25,9 +26,11 @@ Methods:
   - size - size in bytes
   - number - number of the part
   - msgid - message ID as told by the NNTP server
+* write_segments - writes saved segments to a file
 * write_footer - closes nzb. Normally you shouldn't write to a file after this method was invoked.
 
 HISTORY
 =======
+* 0.2.2 - Added save_segment and write_segments methods
 * 0.2.1 - Added attr_reader for nzb_filename  
 * 0.2.0 - Initial public release

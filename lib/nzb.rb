@@ -16,6 +16,10 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ########################################################################
 # = Methods
+# * save_segment - needs to be run for every segment(partial file), replaces write_segment
+#   - size - size in bytes
+#   - number - number of the part
+#   - msgid - message ID as told by the NNTP server
 # * write_header - invoked only once to generate xml header
 # * write_file_header - you need to invoke it once for every file with following parameters:
 #   - poster - as in from field
@@ -27,22 +31,24 @@
 #   - size - size in bytes
 #   - number - number of the part
 #   - msgid - message ID as told by the NNTP server
+# * write_segments - writes saved segments to a file
 # * write_footer - closes nzb. Normally you shouldn't write to a file after this method was invoked.
 ########################################################################
 require 'cgi'
 
 class Nzb
-  attr_reader :nzb_filename
+  attr_reader :nzb_filename, :segments
 
   # we accept basename and prefix, combine them and add suffix ".nzb"
-  def initialize(filename,prefix='')
+  def initialize(filename, prefix='')
+    @segments = []
     @nzb_filename = prefix + filename + ".nzb"
   end
 
   # nzb header
   def write_header(name=nil)
     begin
-      f = File.open(@nzb_filename,"w+:ISO-8859-1")
+      f = File.open(@nzb_filename, "w+:ISO-8859-1")
     rescue
       raise "Unable to open #{@nzb_filename} for writing."
     end
@@ -58,9 +64,9 @@ class Nzb
   end
 
   # date must be in unix timestamp or nil(it isn't checked anyway, so whatever)
-  def write_file_header(poster,subject,groups,date=nil)
+  def write_file_header(poster, subject, groups, date=nil)
     begin
-      f = File.open(@nzb_filename,"a:ISO-8859-1")
+      f = File.open(@nzb_filename, "a:ISO-8859-1")
     rescue
       raise "Unable to open #{@nzb_filename} for writing."
     end
@@ -69,7 +75,7 @@ class Nzb
     date = Time.now.to_i if date.nil?
     f.puts "<file poster=\"#{from}\" date=\"#{date}\" subject=\"#{subj}\">"
     f.puts '<groups>'
-    groups.split(',').each do |group|
+    groups.split(', ').each do |group|
       f.puts '<group>' + group.strip + '</group>'
     end
     f.puts '</groups>'
@@ -80,7 +86,7 @@ class Nzb
   # method closes file section
   def write_file_footer
     begin
-      f = File.open(@nzb_filename,"a:ISO-8859-1")
+      f = File.open(@nzb_filename, "a:ISO-8859-1")
     rescue
       raise "Unable to open #{@nzb_filename} for writing."
     end
@@ -89,9 +95,9 @@ class Nzb
     f.close
   end
 
-  def write_segment(size,number,msgid)
+  def write_segment(size, number, msgid)
     begin
-      f = File.open(@nzb_filename,"a:ISO-8859-1")
+      f = File.open(@nzb_filename, "a:ISO-8859-1")
     rescue
       raise "Unable to open #{@nzb_filename} for writing."
     end
@@ -99,10 +105,28 @@ class Nzb
     f.close
   end
 
+  # same as write_segment only saves it into an array, to be used with write_segments
+  def save_segment(size, number, msgid)
+    @segments[number] = "<segment bytes=\"#{size}\" number=\"#{number}\">#{msgid}</segment>"
+  end
+
+  def write_segments
+    begin
+      f = File.open(@nzb_filename, "a:ISO-8859-1")
+    rescue
+      raise "Unable to open #{@nzb_filename} for writing."
+    end
+    @segments.each do |segment|
+      next if segment.nil?
+      f.puts segment
+    end
+    f.close
+  end
+
   # close nzb
   def write_footer
     begin
-      f = File.open(@nzb_filename,"a:ISO-8859-1")
+      f = File.open(@nzb_filename, "a:ISO-8859-1")
     rescue
       raise "Unable to open #{@nzb_filename} for writing."
     end
