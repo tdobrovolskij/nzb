@@ -1,5 +1,6 @@
 NZB
 ===
+[![Gem Version](https://badge.fury.io/rb/nzb.svg)](http://badge.fury.io/rb/nzb)
 
 Simple library used for nzb file creation. If you don't know what nzb file is, you could check wikipedia: http://en.wikipedia.org/wiki/Nzb
 
